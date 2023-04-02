@@ -382,26 +382,15 @@ if (typeof module !== 'undefined' && module.exports) {
      var isClose=true;
         const stopwords = ["of", "the", "a", "an", "any", "is", "can", "who", "what", "why", "whom"];
         var editor = "sorts\n" +
-            "    #people = {tommy, alex, john, daniel, sarah, peter, lino}.\n" +
-            "    #gender = {male, female}.\n" +
+            "    #faculty = {yuanlin, jingjing, sunholim, bashir, tara}.\n" +
+            "   #cname = {aoa, intelligentsystems, coa, graduateseminar, communicationnetworks}.\n" +
+             "    #term = {spring, summer, fall}.\n" +
+
             "predicates\n" +
-            "    advisor(#people, #people).\n" +
-            "    friend(#people, #people).\n" +
-            "    gender(#people,#gender).\n" +
-            "    spanish(#people).\n" +
+            "    teaches(#faculty, #cname).\n" +
             "rules\n" +
-            "    advisor(tommy, alex).\n" +
-            "    advisor(tommy, john).\n" +
-            "    advisor(tommy, daniel).\n" +
-            "    advisor(tommy, lino).\n" +
-            "    friend(lino, alex).\n" +
-            "    friend(lino, peter).\n" +
-            "    friend(sarah, alex).\n" +
-            "    friend(X, Y):-friend(Y,X).\n" +
-            "    gender(tommy,male).\n" +
-            "    gender(lino,male).\n" +
-            "    gender(sarah, female).\n" +
-            "    spanish(lino).";
+            "    teaches(yuanlin, intelligentsystems).\n" +
+            "    teaches(jingjing, aoa).\n" +
        
 
         // sorts
@@ -453,7 +442,7 @@ if (typeof module !== 'undefined' && module.exports) {
 
         }
         all_predicates.push('speak spanish'); // extra terms
-        a = FuzzySet(all_predicates);
+     //   a = FuzzySet(all_predicates);
       
       console.log(all_predicates)
       
@@ -619,7 +608,7 @@ function placeHolder() {
 </script>
  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-    <script src='//www.aa.com/jquery.js'></script>
+  //  <script src='//www.aa.com/jquery.js'></script>
     
    
 
