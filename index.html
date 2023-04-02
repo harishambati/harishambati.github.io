@@ -78,244 +78,10 @@ pre {
   </div>
   
 
+
+
 <script type="text/javascript">
-  
-
-     var isClose=true;
-        const stopwords = ["of", "the", "a", "an", "any", "is", "can", "who", "what", "why", "whom"];
-        var editor = "sorts\n" +
-            "    #people = {tommy, alex, john, daniel, sarah, peter, lino}.\n" +
-            "    #gender = {male, female}.\n" +
-            "predicates\n" +
-            "    advisor(#people, #people).\n" +
-            "    friend(#people, #people).\n" +
-            "    gender(#people,#gender).\n" +
-            "    spanish(#people).\n" +
-            "rules\n" +
-            "    advisor(tommy, alex).\n" +
-            "    advisor(tommy, john).\n" +
-            "    advisor(tommy, daniel).\n" +
-            "    advisor(tommy, lino).\n" +
-            "    friend(lino, alex).\n" +
-            "    friend(lino, peter).\n" +
-            "    friend(sarah, alex).\n" +
-            "    friend(X, Y):-friend(Y,X).\n" +
-            "    gender(tommy,male).\n" +
-            "    gender(lino,male).\n" +
-            "    gender(sarah, female).\n" +
-            "    spanish(lino).";
-       
-
-        // sorts
-        var contstring = editor.split("sorts\n")[1].split("predicates\n");
-        var sortstring = contstring[0].split('.');
-        sortstring.splice(-1, 1);
-        var sorts = {};
-        sortstring = sortstring.map(d => d.replace(/\n/g, '').trim()).forEach(d => {
-            var par = d.split("=");
-            sorts[par[0].replace(/#/, '').trim()] = par[1].replace(/{|}/g, '').split(',').map(w => w.trim())
-        });
-        // predicates
-        var predicates = {};
-        contstring = contstring[1].split("rules\n");
-        sortstring = contstring[0].split('.');
-        sortstring.splice(-1, 1);
-        sortstring.forEach(d => {
-            var part = d.replace(/\n/g, '').trim().split('(');
-            var func = part[0];
-            predicates[func] = {};
-            var par = part[1].split(',').map(e => e.replace(/#|\)/g, '').trim());
-            var par1 = sorts[par[0]].slice();
-            par1.push("X");
-            par.splice(0, 1);
-            par1.forEach(e => {
-                var strinh = (e == 'X' ? '' : (e + ' ')) + func;
-                predicates[func][strinh] = func + "(" + e + ")";
-                par.forEach(par2 => {
-                    var temp = sorts[par2].slice();
-                    temp.push("X");
-                    temp.forEach(t => {
-                        var strinh = (e == 'X' ? '' : (e + ' ')) + func + (t == 'X' ? '' : (' ' + t));
-                        // if (strinh != fubnc)
-                        predicates[func][strinh] = func + "(" + e + "," + t + ")";
-                    })
-                });
-            });
-        });
-
-
-        var all_predicates = [];
-        for (var key1 in predicates) {
-            if (predicates.hasOwnProperty(key1)) {
-                for (var key2 in predicates[key1]) {
-                    if (predicates[key1].hasOwnProperty(key2))
-                        all_predicates.push(key2);
-                }
-            }
-
-        }
-        all_predicates.push('speak spanish'); // extra terms
-        a = FuzzySet(all_predicates);
-      
-      console.log(all_predicates)
-      
-      
-      // Speech recognition API
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      const recognition = new SpeechRecognition();
-      recognition.lang = 'en-US';
-
-      // Get DOM elements
-      const answerDiv = document.querySelector('#answer');
-      const voiceBtn = document.getElementById('voice-input-btn');
-      const textInput = document.getElementById('chatbox');
-      const answerBox = document.getElementById('answer-box');
-      const answerlabel = document.getElementById('answer_label');
-
-
-
-      // Handle speech recognition
-      recognition.onresult = event => {
-        const resultIndex = event.resultIndex;
-        const transcript = event.results[resultIndex][0].transcript;
-        textInput.value = transcript;
-        
-        var trim_script = transcript.split(" ");
-        trim_script = trim_script.filter(f => !stopwords.includes(f));
-        var queryQues = a.get(trim_script.join(" "), null, 0.5);
-        console.log(queryQues);
-        getAnswer(queryQues);
-      };
-
-      // Handle click on voice input button     
-      function startSpeechRecognition() {
-        recognition.start();
-      }
-      voiceBtn.addEventListener('click', startSpeechRecognition);
-
-
-      function getAnswer(question) {
-        
-        if (question!=null) {
-                var mainkey = question[0][1].replace('speak ','');
-                var answerarr = mainkey.split(' ');
-                var key1 = '';
-                answerarr.forEach(d => {
-                    key1 = (predicates[d] != undefined) ? d : key1;
-                });
-                //var key1 = answerarr.length>2? answerarr[1]:answerarr[0];
-                var key2 = mainkey;
-                console.log(key1 +'-'+ key2);
-                console.log(predicates[key1][key2]);
-                
-                var data = {
-                    'action': "getQuery",
-                    'query': predicates[key1][key2],
-                    'editor': editor
-                };
-          
-          console.log(data)
-          
-          
-          
-          $.ajax({
-          url: "https://cors-anywhere.herokuapp.com/http://wave.ttu.edu/ajax.php",
-          type: "POST",
-          headers: {
-            "X-Requested-With": "XMLHttpRequest"
-          },
-          data: {
-            action: "getQuery",
-            query: predicates[key1][key2],
-            editor: editor
-          },
-          success: function(response) {
-            console.log(response);
-             const answer = response || 'Sorry, I could not find an answer.';
-            answerlabel.innerHTML = answer;
-          Speech(answer);
-            
-          },
-          error: function(xhr, status, error) {
-            console.log("error: " + error);
-             messages.push("<b>" + botName + "" + "error");
-          }
-        });
-
-          }
-        }
-        
-      
-
-//links
-//http://eloquentjavascript.net/09_regexp.html
-//https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions
-
-
-var messages = [], //array that hold the record of each string in chat
-  lastUserMessage = "", //keeps track of the most recent input string from the user
-  talking = true; //when false the speach function doesn't work
-
-function chatbotResponse() {
-  talking = true;
-  const question = lastUserMessage;
-    var trim_script = question.split(" ");
-    trim_script = trim_script.filter(f => !stopwords.includes(f));
-    var queryQues = a.get(trim_script.join(" "), null, 0.5); 
-    getAnswer(queryQues);
-  }
-
-
-function newEntry() {
-  if (document.getElementById("chatbox").value != "") {
-    lastUserMessage = document.getElementById("chatbox").value;
-    document.getElementById("chatbox").value = "";
-    messages = [];
-    messages.push(lastUserMessage);
-    Speech(lastUserMessage);
-    chatbotResponse();
-    for (var i = 1; i < 8; i++) {
-      if (messages[messages.length - i])
-        document.getElementById("chatlog" + i).innerHTML = messages[messages.length - i];
-    }
-  }
-}
-
-//text to Speech
-//https://developers.google.com/web/updates/2014/01/Web-apps-that-talk-Introduction-to-the-Speech-Synthesis-API
-function Speech(say) {
-  if ('speechSynthesis' in window && talking) {
-    var utterance = new SpeechSynthesisUtterance(say);
-    speechSynthesis.speak(utterance);
-  }
-}
-
-//runs the keypress() function when a key is pressed
-document.onkeypress = keyPress;
-//if the key pressed is 'enter' runs the function newEntry()
-function keyPress(e) {
-  var x = e || window.event;
-  var key = (x.keyCode || x.which);
-  if (key == 13 || key == 3) {
-    //runs this function when enter is pressed
-    newEntry();
-    
-   
-  }
-  if (key == 38) {
-    console.log('hi')
-      //document.getElementById("chatbox").value = lastUserMessage;
-  }
-}
-
-//clears the placeholder text ion the chatbox
-//this function is set to run when the users brings focus to the chatbox, by clicking on it
-function placeHolder() {
-  document.getElementById("chatbox").placeholder = "";
-}
-
-
-//fuzzzy set
+    //fuzzzy set
 
 (function() {
 
@@ -612,6 +378,243 @@ if (typeof module !== 'undefined' && module.exports) {
 }
 
 })();
+
+    
+
+     var isClose=true;
+        const stopwords = ["of", "the", "a", "an", "any", "is", "can", "who", "what", "why", "whom"];
+        var editor = "sorts\n" +
+            "    #people = {tommy, alex, john, daniel, sarah, peter, lino}.\n" +
+            "    #gender = {male, female}.\n" +
+            "predicates\n" +
+            "    advisor(#people, #people).\n" +
+            "    friend(#people, #people).\n" +
+            "    gender(#people,#gender).\n" +
+            "    spanish(#people).\n" +
+            "rules\n" +
+            "    advisor(tommy, alex).\n" +
+            "    advisor(tommy, john).\n" +
+            "    advisor(tommy, daniel).\n" +
+            "    advisor(tommy, lino).\n" +
+            "    friend(lino, alex).\n" +
+            "    friend(lino, peter).\n" +
+            "    friend(sarah, alex).\n" +
+            "    friend(X, Y):-friend(Y,X).\n" +
+            "    gender(tommy,male).\n" +
+            "    gender(lino,male).\n" +
+            "    gender(sarah, female).\n" +
+            "    spanish(lino).";
+       
+
+        // sorts
+        var contstring = editor.split("sorts\n")[1].split("predicates\n");
+        var sortstring = contstring[0].split('.');
+        sortstring.splice(-1, 1);
+        var sorts = {};
+        sortstring = sortstring.map(d => d.replace(/\n/g, '').trim()).forEach(d => {
+            var par = d.split("=");
+            sorts[par[0].replace(/#/, '').trim()] = par[1].replace(/{|}/g, '').split(',').map(w => w.trim())
+        });
+        // predicates
+        var predicates = {};
+        contstring = contstring[1].split("rules\n");
+        sortstring = contstring[0].split('.');
+        sortstring.splice(-1, 1);
+        sortstring.forEach(d => {
+            var part = d.replace(/\n/g, '').trim().split('(');
+            var func = part[0];
+            predicates[func] = {};
+            var par = part[1].split(',').map(e => e.replace(/#|\)/g, '').trim());
+            var par1 = sorts[par[0]].slice();
+            par1.push("X");
+            par.splice(0, 1);
+            par1.forEach(e => {
+                var strinh = (e == 'X' ? '' : (e + ' ')) + func;
+                predicates[func][strinh] = func + "(" + e + ")";
+                par.forEach(par2 => {
+                    var temp = sorts[par2].slice();
+                    temp.push("X");
+                    temp.forEach(t => {
+                        var strinh = (e == 'X' ? '' : (e + ' ')) + func + (t == 'X' ? '' : (' ' + t));
+                        // if (strinh != fubnc)
+                        predicates[func][strinh] = func + "(" + e + "," + t + ")";
+                    })
+                });
+            });
+        });
+
+
+        var all_predicates = [];
+        for (var key1 in predicates) {
+            if (predicates.hasOwnProperty(key1)) {
+                for (var key2 in predicates[key1]) {
+                    if (predicates[key1].hasOwnProperty(key2))
+                        all_predicates.push(key2);
+                }
+            }
+
+        }
+        all_predicates.push('speak spanish'); // extra terms
+        a = FuzzySet(all_predicates);
+      
+      console.log(all_predicates)
+      
+      
+      // Speech recognition API
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const recognition = new SpeechRecognition();
+      recognition.lang = 'en-US';
+
+      // Get DOM elements
+      const answerDiv = document.querySelector('#answer');
+      const voiceBtn = document.getElementById('voice-input-btn');
+      const textInput = document.getElementById('chatbox');
+      const answerBox = document.getElementById('answer-box');
+      const answerlabel = document.getElementById('answer_label');
+
+
+
+      // Handle speech recognition
+      recognition.onresult = event => {
+        const resultIndex = event.resultIndex;
+        const transcript = event.results[resultIndex][0].transcript;
+        textInput.value = transcript;
+        
+        var trim_script = transcript.split(" ");
+        trim_script = trim_script.filter(f => !stopwords.includes(f));
+        var queryQues = a.get(trim_script.join(" "), null, 0.5);
+        console.log(queryQues);
+        getAnswer(queryQues);
+      };
+
+      // Handle click on voice input button     
+      function startSpeechRecognition() {
+        recognition.start();
+      }
+      voiceBtn.addEventListener('click', startSpeechRecognition);
+
+
+      function getAnswer(question) {
+        
+        if (question!=null) {
+                var mainkey = question[0][1].replace('speak ','');
+                var answerarr = mainkey.split(' ');
+                var key1 = '';
+                answerarr.forEach(d => {
+                    key1 = (predicates[d] != undefined) ? d : key1;
+                });
+                //var key1 = answerarr.length>2? answerarr[1]:answerarr[0];
+                var key2 = mainkey;
+                console.log(key1 +'-'+ key2);
+                console.log(predicates[key1][key2]);
+                
+                var data = {
+                    'action': "getQuery",
+                    'query': predicates[key1][key2],
+                    'editor': editor
+                };
+          
+          console.log(data)
+          
+          
+          
+          $.ajax({
+          url: "https://cors-anywhere.herokuapp.com/http://wave.ttu.edu/ajax.php",
+          type: "POST",
+          headers: {
+            "X-Requested-With": "XMLHttpRequest"
+          },
+          data: {
+            action: "getQuery",
+            query: predicates[key1][key2],
+            editor: editor
+          },
+          success: function(response) {
+            console.log(response);
+             const answer = response || 'Sorry, I could not find an answer.';
+            answerlabel.innerHTML = answer;
+          Speech(answer);
+            
+          },
+          error: function(xhr, status, error) {
+            console.log("error: " + error);
+             messages.push("<b>" + botName + "" + "error");
+          }
+        });
+
+          }
+        }
+        
+      
+
+//links
+//http://eloquentjavascript.net/09_regexp.html
+//https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions
+
+
+var messages = [], //array that hold the record of each string in chat
+  lastUserMessage = "", //keeps track of the most recent input string from the user
+  talking = true; //when false the speach function doesn't work
+
+function chatbotResponse() {
+  talking = true;
+  const question = lastUserMessage;
+    var trim_script = question.split(" ");
+    trim_script = trim_script.filter(f => !stopwords.includes(f));
+    var queryQues = a.get(trim_script.join(" "), null, 0.5); 
+    getAnswer(queryQues);
+  }
+
+
+function newEntry() {
+  if (document.getElementById("chatbox").value != "") {
+    lastUserMessage = document.getElementById("chatbox").value;
+    document.getElementById("chatbox").value = "";
+    messages = [];
+    messages.push(lastUserMessage);
+    Speech(lastUserMessage);
+    chatbotResponse();
+    for (var i = 1; i < 8; i++) {
+      if (messages[messages.length - i])
+        document.getElementById("chatlog" + i).innerHTML = messages[messages.length - i];
+    }
+  }
+}
+
+//text to Speech
+//https://developers.google.com/web/updates/2014/01/Web-apps-that-talk-Introduction-to-the-Speech-Synthesis-API
+function Speech(say) {
+  if ('speechSynthesis' in window && talking) {
+    var utterance = new SpeechSynthesisUtterance(say);
+    speechSynthesis.speak(utterance);
+  }
+}
+
+//runs the keypress() function when a key is pressed
+document.onkeypress = keyPress;
+//if the key pressed is 'enter' runs the function newEntry()
+function keyPress(e) {
+  var x = e || window.event;
+  var key = (x.keyCode || x.which);
+  if (key == 13 || key == 3) {
+    //runs this function when enter is pressed
+    newEntry();
+    
+   
+  }
+  if (key == 38) {
+    console.log('hi')
+      //document.getElementById("chatbox").value = lastUserMessage;
+  }
+}
+
+//clears the placeholder text ion the chatbox
+//this function is set to run when the users brings focus to the chatbox, by clicking on it
+function placeHolder() {
+  document.getElementById("chatbox").placeholder = "";
+}
+
+
 
 
 
