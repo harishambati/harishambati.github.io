@@ -2,10 +2,6 @@
 <head>
 
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
- <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
- <script src='//www.aa.com/jquery.js'></script>
-
 
 <style>
 
@@ -84,6 +80,16 @@ pre {
       <img src="mic.webp"  id="voice-input-btn" width="50px height="50px cliclable= "true" </span>
   </div>
   
+
+
+ 
+
+   
+
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+ <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+ 
 
 <script type="text/javascript">
   
@@ -385,33 +391,44 @@ if (typeof module !== 'undefined' && module.exports) {
 
 })();
 
+      // var isClose=true;
+      //   const stopwords = ["of", "the", "a", "an", "any", "is", "can", "who", "what", "why", "whom"];
+      //   var editor = "sorts\n" +
+      //       "    #faculty = {yuanlin, jingjing, sunholim, bashir, tara}.\n" +
+      //       "   #cname = {aoa, intelligentsystems, coa, graduateseminar, communicationnetworks}.\n" +
+      //        "    #term = {spring, summer, fall}.\n" +
 
-        var isClose=true;
+      //       "predicates\n" +
+      //       "    teaches(#faculty, #cname).\n" +
+      //       "rules\n" +
+      //       "    teaches(yuanlin, intelligentsystems).\n" +
+      //       "    teaches(jingjing, aoa).\n" ;
+        
+      
+      var isClose=true;
         const stopwords = ["of", "the", "a", "an", "any", "is", "can", "who", "what", "why", "whom"];
         var editor = "sorts\n" +
-            "    #faculty_names = {tianxi, abdul_serwadda, liu_ying, tommy_dang, susan_mengel, tara_salman, shin_eonsuk, zhang_yu, sunho_lim, zhang_yu, jingjing_yao, chen_lin, sheng_shengli, rees_eric, siami_namin_akbar}.\n" +
+            " #faculty_names = {tianxi, abdul_serwadda, liu_ying, tommy_dang, susan_mengel, tara_salman, shin_eonsuk, zhang_yu, sunho_lim, zhang_yu, jingjing_yao, chen_lin, sheng_shengli, rees_eric, siami_namin_akbar}.\n" +
             "   #cname = {graduateseminar, introtoinforcompsecurity, networksecurity, advoperatingsysdesign, communicationnetworks, informationretrieval, intelligentsystems, softwaremodelingarchitecture, computersystorgarch, communicationsnetworks, parallelprocessing, analysisofalgorithms, theoryofautomata, neuralnetworks, bioinformatics, digitalforensics, datasecurityandprivacy}.\n" +
              "    #term = {spring, summer, fall}.\n" +
 
             "predicates\n" +
-            "    teaches(#faculty, #cname).\n" +
+            "    teaches(#faculty_names, #cname).\n" +
             "rules\n" +
-            "    teaches(tianxi, graduateseminar).\n" +
+                "teaches(tianxi, graduateseminar).\n" +
                 "teaches(abdul_serwadda, introtoinforcompsecurity). \n" +
-                "teaches(liu_ying, networksecurity). \n" +
-                "teaches(tommy_dang, advoperatingsysdesign). \n +"
-                "teaches(susan_mengel, informationretrieval). \n" +
-                "teaches(tara_salman, intelligentsystems). \n" +
+                "teaches(liu_ying, networksecurity).\n" +
+                "teaches(tommy_dang, advoperatingsysdesign).\n "+
+                "teaches(susan_mengel, informationretrieval).\n" +
+                "teaches(tara_salman, intelligentsystems).\n" +
                 "teaches(shin_eonsuk, softwaremodelingarchitecture). \n" +
-                "teaches(zhang_yu, parallelprocessing). \n" +
-                "teaches(jingjing_yao, analysisofalgorithms). \n" +
-                "teaches(chen_lin, theoryofautomata). \n" +
-                "teaches(sheng_shengli, neuralnetworks). \n"+
-                "teaches(rees_eric, bioinformatics). \n"+
-                "teaches(siami_namin_akbar, digitalforensics). \n"+
-                "teaches(tianxi, datasecurityandprivacy). \n" ;
-  
-
+                "teaches(zhang_yu, parallelprocessing).\n" +
+                "teaches(jingjing_yao, analysisofalgorithms).\n" +
+                "teaches(chen_lin, theoryofautomata).\n" +
+                "teaches(sheng_shengli, neuralnetworks).\n"+
+                "teaches(rees_eric, bioinformatics).\n"+
+                "teaches(siami_namin_akbar, digitalforensics).\n"+
+                "teaches(tianxi, datasecurityandprivacy).\n" ;
        
 
         // sorts
@@ -433,8 +450,7 @@ if (typeof module !== 'undefined' && module.exports) {
             var func = part[0];
             predicates[func] = {};
             var par = part[1].split(',').map(e => e.replace(/#|\)/g, '').trim());
-            var par1 = [];
-            par1 = sorts[par[0]].slice();
+            var par1 = sorts[par[0]].slice();
             par1.push("X");
             par.splice(0, 1);
             par1.forEach(e => {
@@ -554,11 +570,7 @@ if (typeof module !== 'undefined' && module.exports) {
           }
         }
         
-      
-
-//links
-//http://eloquentjavascript.net/09_regexp.html
-//https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions
+    
 
 
 var messages = [], //array that hold the record of each string in chat
@@ -628,12 +640,6 @@ function placeHolder() {
 
 
 </script>
- 
-
-   
-
-</body>
-
 
 
 <html>
