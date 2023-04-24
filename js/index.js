@@ -300,18 +300,23 @@
 })();
 
 var isClose = true;
-const stopwords = ["of", "the", "a", "an", "any", "is", "can", "who", "what", "why", "whom", "does", "in"];
+const stopwords = ["in", "of", "the", "a", "an", "any", "is", "can", "who", "what", "why", "whom", "does", "in"];
 var editor = "sorts\n" +
-    " #faculty_names = {tianxi, abdul_serwadda, liu_ying, tommy_dang, susan_mengel, tara_salman, shin_eonsuk, zhang_yu, sunho_lim, jingjing_yao, chen_lin, shengshengli, rees_eric, siami_namin_akbar}.\n" +
+    "   #faculty_names = {tianxi, abdul_serwadda, liu_ying, tommy_dang, susan_mengel, tara_salman, shin_eonsuk, zhang_yu, sunho_lim, jingjing_yao, chen_lin, shengshengli, rees_eric, siami_namin_akbar, chen_yong}.\n" +
     "   #cname = {graduateseminar, introtoinforcompsecurity, networksecurity, advoperatingsysdesign, communicationnetworks, informationretrieval, intelligentsystems, softwaremodelingarchitecture, computersystorgarch, communicationsnetworks, parallelprocessing, analysisofalgorithms, theoryofautomata, neuralnetworks, bioinformatics, digitalforensics, datasecurityandprivacy, patternrecognition, wirelessnetandmobilecomp, specialproblemsincomputerscienceaerialcomputing, advdatabasemanagementsystems, cryptography}.\n" +
     "    #terms = {summer, fall}.\n" +
     "    #roles = {professor, graduate_assistant}.\n" +
+     "   #d_name = {cs}.\n" +
 
     "predicates\n" +
-    "   designation(#faculty_names, #roles).\n" +
-    "   teaches(#faculty_names, #cname).\n" +
+    "  designation(#faculty_names, #roles).\n" +
+    "  teaches(#faculty_names, #cname).\n" +
     "  offered(#cname, #terms).\n" +
+    "  department(#d_name, #cname).\n" +
+
+
     "rules\n" +
+
     "designation(tianxi, professor).\n" +
     "designation(abdul_serwadda, professor).\n" +
     "designation(liu_ying, professor).\n" +
@@ -326,6 +331,7 @@ var editor = "sorts\n" +
     "designation(shengshengli, professor).\n" +
     "designation(rees_eric, professor).\n" +
     "designation(siami_namin_akbar, professor).\n" +
+    "-designation(X, Y) :- not designation(X, Y).\n" +
 
 
     "offered(graduateseminar, fall).\n" +
@@ -344,18 +350,37 @@ var editor = "sorts\n" +
     "offered(datasecurityandprivacy, fall).\n" +
 
 
+    "department(cs, graduateseminar).\n" +
+    "department(cs, introtoinforcompsecurity). \n" +
+    "department(cs, networksecurity).\n" +
+    "department(cs, advoperatingsysdesign).\n " +
+    "department(cs, informationretrieval).\n" +
+    "department(cs, intelligentsystems).\n" +
+    "department(cs, softwaremodelingarchitecture).\n" +
+    "department(cs, parallelprocessing).\n" +
+    "department(cs, analysisofalgorithms).\n" +
+    "department(cs, theoryofautomata).\n" +
+    "department(cs, neuralnetworks).\n" +
+    "department(cs, bioinformatics).\n" +
+    "department(cs, digitalforensics).\n" +
+    "department(cs, datasecurityandprivacy).\n" +
+    "-department(X, Y) :- not department(X, Y).\n" +
+
+
     "offered(patternrecognition, summer).\n" +
     "offered(wirelessnetandmobilecomp, summer ).\n" +
     "offered(specialproblemsincomputerscienceaerialcomputing, summer).\n" +
     "offered(advdatabasemanagementsystems, summer).\n" +
     "offered(bioinformatics, summer).\n" +
     "offered(cryptography, summer).\n" +
+    "-offered(X, Y) :- not offered(X, Y).\n" +
 
     "teaches(abdul_serwadda, patternrecognition).\n" +
     "teaches(sunho_lim, wirelessnetandmobilecomp). \n" +
     "teaches(sunho_lim, specialproblemsincomputerscienceaerialcomputing).\n" +
     "teaches(rees_eric, bioinformatics).\n" +
-    "teaches(abdul_serwadda, cryptography).\n" +
+    "teaches(abdul_serwadda, cryptography).\n" 
+
 
     "teaches(tianxi, graduateseminar).\n" +
     "teaches(abdul_serwadda, introtoinforcompsecurity). \n" +
@@ -370,8 +395,9 @@ var editor = "sorts\n" +
     "teaches(shengshengli, neuralnetworks).\n" +
     "teaches(rees_eric, bioinformatics).\n" +
     "teaches(siami_namin_akbar, digitalforensics).\n" +
-    "teaches(tianxi, datasecurityandprivacy).\n";
-
+    "teaches(tianxi, datasecurityandprivacy).\n"
+    "-teaches(X, Y) :- not teaches(X, Y).\n" ;
+    
 
 // sorts
 var contstring = editor.split("sorts\n")[1].split("predicates\n");
